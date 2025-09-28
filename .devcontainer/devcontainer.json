@@ -18,6 +18,7 @@
 				"python.analysis.extraPaths": [
 					"/.venv/lib/python3.13/site-packages"
 				],
+        "python-envs.pythonProjects": [],
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true,
         "git.openRepositoryInParentFolders": "always",

@@ -29,3 +29,23 @@ vendor
 # IDEs
 .vscode/
 .idea/
+
+# ASP
+.backup*
+.cloudbuild
+media_agent/utils
+media_agent/agent_engine_app.py
+deployment
+frontend
+notebooks
+tests
+deployment_metadata.json
+GEMINI.md
+Makefile
+/pyproject.toml
+/starter_pack_README.md
+/uv.lock
+
+# App
+output
+your-image.jpg
