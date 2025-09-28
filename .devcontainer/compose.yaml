@@ -1,0 +1,11 @@
+services:
+  agent:
+    image: ${PROJECT_NAME}
+    build: .
+    command: sleep infinity
+    volumes:
+      - ../:/workspace
+    environment:
+      - GOOGLE_GENAI_USE_VERTEXAI=${GOOGLE_GENAI_USE_VERTEXAI}
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+      - GOOGLE_CLOUD_LOCATION=${GOOGLE_CLOUD_LOCATION}
