@@ -14,17 +14,17 @@ services:
       - GENMEDIA_BUCKET=${GENMEDIA_BUCKET}
       - REFERENCE_IMAGE_URI=${REFERENCE_IMAGE_URI}
       - IMAGEN_INSTRUCTION=${IMAGEN_INSTRUCTION}
-      # - MCP_VEO_ENDPOINT=${MCP_VEO_ENDPOINT}
-      # - MCP_IMAGEN_ENDPOINT=${MCP_IMAGEN_ENDPOINT}
+      - MCP_VEO_ENDPOINT=${MCP_VEO_ENDPOINT}
+      - MCP_IMAGEN_ENDPOINT=${MCP_IMAGEN_ENDPOINT}
 
   # mcp-veo:
   #   image: ${PROJECT_NAME}-mcp-genmedia
   #   build: ./.mcp-genmedia/
   #   command: /mcp-veo-go -transport sse
   #   volumes:
-  #     - $HOME/.config/gcloud/application_default_credentials.json:/gcloud/creds.json
+  #     - $HOME/.config/gcloud/application_default_credentials.json:/creds.json
   #   environment:
-  #     - GOOGLE_APPLICATION_CREDENTIALS=/gcloud/creds.json
+  #     - GOOGLE_APPLICATION_CREDENTIALS=/creds.json
   #     - PROJECT_ID=${GOOGLE_CLOUD_PROJECT}
   #     - LOCATION=${GOOGLE_CLOUD_LOCATION}
   #     - GENMEDIA_BUCKET=${GENMEDIA_BUCKET}
@@ -35,9 +35,9 @@ services:
   #   build: ./.mcp-genmedia/
   #   command: /mcp-imagen-go -transport sse
   #   volumes:
-  #     - $HOME/.config/gcloud/application_default_credentials.json:/gcloud/creds.json
+  #     - $HOME/.config/gcloud/application_default_credentials.json:/creds.json
   #   environment:
-  #     - GOOGLE_APPLICATION_CREDENTIALS=/gcloud/creds.json
+  #     - GOOGLE_APPLICATION_CREDENTIALS=/creds.json
   #     - PROJECT_ID=${GOOGLE_CLOUD_PROJECT}
   #     - LOCATION=${GOOGLE_CLOUD_LOCATION}
   #     - GENMEDIA_BUCKET=${GENMEDIA_BUCKET}

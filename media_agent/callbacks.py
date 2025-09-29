@@ -23,7 +23,7 @@ sa_email = os.getenv("GOOGLE_CLOUD_SA_EMAIL")
 def before_model(
     callback_context: CallbackContext, llm_request: LlmRequest
 ) -> Optional[LlmResponse]:
-    print(f"[Before Model callback] {callback_context.agent_name}")
+    # print(f"[Before Model callback] {callback_context.agent_name}")
     if (
         llm_request.contents
         and llm_request.contents[-1].role == "user"
@@ -39,7 +39,7 @@ def before_model(
 def after_tool(
     tool: BaseTool, args: Dict[str, Any], tool_context: ToolContext, tool_response: Dict
 ) -> Optional[Dict]:
-    print(f"[After Tool callback] Tool '{tool.name}' in '{tool_context.agent_name}'")
+    # print(f"[After Tool callback] Tool '{tool.name}' in '{tool_context.agent_name}'")
     if (
         tool_response
         and tool_response.content
@@ -49,7 +49,7 @@ def after_tool(
         text = tool_response.content[0].text
         modified = copy.deepcopy(tool_response)
         modified.content[0].text = replace_gcs_paths_with_signed_urls(text)
-        print(f"[After Tool callback] Modified response: {modified}")
+        # print(f"[After Tool callback] Modified response: {modified}")
         return modified
 
     return None
