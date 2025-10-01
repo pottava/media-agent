@@ -115,9 +115,9 @@ adk web
 
 ## クラウドへのデプロイ
 
-動画や画像を生成する MCP サーバは Cloud Run へデプロイし  
-AI エージェント本体のみの Agent Engine へデプロイします。  
-その後、社内のエージェント プラットフォームとして公開するために Agentspace へ登録します。
+動画や画像を生成する MCP サーバを使う場合 (media_agent_mcp) Cloud Run へデプロイし  
+AI エージェント本体は Agent Engine へデプロイします。  
+その後、社内に広く UI 付きで公開するために Agentspace へ登録します。
 
 ### MCP サーバを Cloud Run へ
 
@@ -217,6 +217,7 @@ export AGENT_ENGINE_DESCRIPTION="四則演算を行うエージェントです"
 本来 `adk deploy agent_engine` コマンドが手軽なのですが、2025 年 10 月 1 日現在 [こんな不具合](https://github.com/google/adk-python/issues/2995) が起こっているため、代わりに [Agent Starter Pack (ASP)](https://googlecloudplatform.github.io/agent-starter-pack/) を使ってみます。
 
 ```bash
+cp .devcontainer/pyproject.toml .devcontainer/uv.lock .
 uvx agent-starter-pack enhance --adk -d agent_engine
 ```
 
@@ -236,9 +237,9 @@ make install
 2025 年 10 月 1 日現在意図しない挙動があるため、ちょっとしたワークアラウンドを行いつつ Agent Engine に登録します。
 
 ```bash
-uv pip freeze > .requirements.txt
 mv media_agent/agent_engine_app.py ./
-uv run agent_engine_app.py --agent-name "${AGENT_ENGINE_DISPLAY_NAME}" --service-account "${AGENT_ENGINE_SERVICE_ACCOUNT}"
+uv pip freeze > .requirements.txt
+uv run agent_engine_app.py --agent-name "${AGENT_ENGINE_DISPLAY_NAME}" --service-account ${GOOGLE_CLOUD_SA_EMAIL}"
 ```
 
 デプロイできたことの確認も兼ねて、リソースの名前を取得してみます。
@@ -263,7 +264,7 @@ echo "${session}" | jq .
 そのセッションを利用してエージェントにメッセージを送信してみます。
 
 ```text
-message_base='{"class_method": "async_stream_query", "input": {"user_id": "test_user", "message": "(1456 - 98 * 12) / 7 = ?"'
+message_base='{"class_method": "async_stream_query", "input": {"user_id": "test_user", "message": "汐留でくつろぐ、かわいいお父さん犬の画像をください"'
 response=$( curl -sX POST "${api_endpoint}/"${AGENT_ENGINE_RESOURCE_NAME##*/}":streamQuery?alt=sse" -H "Authorization: Bearer $(gcloud auth print-access-token)" -H "Content-Type: application/json" -d "${message_base}, \"session_id\": \"${session_id}\"}}" )
 echo "${response}" | jq -s ".[-1].content.parts"
 ```
@@ -280,7 +281,7 @@ adk web --session_service_uri "agentengine://${AGENT_ENGINE_RESOURCE_NAME}"
 一時フォルダを作り、ツールをダウンロードします。
 
 ```bash
-mkdir tmp && cd $_
+mkdir -p tmp && cd $_
 git clone https://github.com/VeerMuchandi/agent_registration_tool.git
 cd agent_registration_tool
 ```

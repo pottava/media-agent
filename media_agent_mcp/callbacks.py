@@ -1,3 +1,4 @@
+import copy
 import os
 import re
 import datetime
@@ -22,7 +23,7 @@ sa_email = os.getenv("GOOGLE_CLOUD_SA_EMAIL")
 def before_model(
     callback_context: CallbackContext, llm_request: LlmRequest
 ) -> Optional[LlmResponse]:
-    print(f"[Before Model callback] {callback_context.agent_name}")
+    # print(f"[Before Model callback] {callback_context.agent_name}")
     if (
         llm_request.contents
         and llm_request.contents[-1].role == "user"
@@ -38,16 +39,19 @@ def before_model(
 def after_tool(
     tool: BaseTool, args: Dict[str, Any], tool_context: ToolContext, tool_response: Dict
 ) -> Optional[Dict]:
-    print(f"[After Tool callback] Tool '{tool.name}' in '{tool_context.agent_name}'")
-    if tool_response:
-        print(f"[After Tool callback] Response '{tool_response}'")
-        modified = replace_values_recursively(
-            tool_response,
-            replace_gcs_paths_with_signed_urls,
-            ignore_keys={"status"},
-        )
-        print(f"[After Tool callback] Modified '{modified}'")
+    # print(f"[After Tool callback] Tool '{tool.name}' in '{tool_context.agent_name}'")
+    if (
+        tool_response
+        and tool_response.content
+        and isinstance(tool_response.content, list)
+        and len(tool_response.content) > 0
+    ):
+        text = tool_response.content[0].text
+        modified = copy.deepcopy(tool_response)
+        modified.content[0].text = replace_gcs_paths_with_signed_urls(text)
+        # print(f"[After Tool callback] Modified response: {modified}")
         return modified
+
     return None
 
 
@@ -148,32 +152,3 @@ def replace_gcs_paths_with_signed_urls(text: str) -> str:
         return signed_url if signed_url else original_path
 
     return url_pattern.sub(replacer, text)
-
-
-def replace_values_recursively(obj, replacement_func, ignore_keys=None):
-    """
-    辞書やリストの値を再帰的にたどり、文字列に対して置換関数を適用する
-    """
-    if ignore_keys is None:
-        ignore_keys = set()
-
-    if isinstance(obj, dict):
-        new_dict = {}
-        for key, value in obj.items():
-            if key in ignore_keys:
-                new_dict[key] = value
-            else:
-                new_dict[key] = replace_values_recursively(
-                    value, replacement_func, ignore_keys
-                )
-        return new_dict
-
-    elif isinstance(obj, list):
-        return [
-            replace_values_recursively(item, replacement_func, ignore_keys)
-            for item in obj
-        ]
-    elif isinstance(obj, str):
-        return replacement_func(obj)
-    else:
-        return obj
